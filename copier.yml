@@ -1,0 +1,124 @@
+# Template information
+_min_copier_version: "9.0.0"
+_templates_suffix: .jinja
+_envops:
+  block_end_string: "%}"
+  block_start_string: "{%"
+  comment_end_string: "#}"
+  comment_start_string: "{#"
+  keep_trailing_newline: true
+  variable_end_string: "}}"
+  variable_start_string: "{{"
+
+# Project metadata
+project_name:
+  type: str
+  help: Your project name
+  default: FastAPI HTMX Project
+
+repository_url:
+  type: str
+  help: URL of the template repository
+  default: "https://github.com/pypeaday/agentic-starter-kit-python"
+
+project_slug:
+  type: str
+  help: Project slug (used in URLs, file names, etc.)
+  default: "{{ project_name|lower|replace(' ', '-')|replace('_', '-') }}"
+
+project_description:
+  type: str
+  help: A short description of your project
+  default: A modern web application built with FastAPI and HTMX
+
+# Database configuration
+database_url:
+  type: str
+  help: SQLite database URL
+  default: "sqlite:///./data/app.db"
+
+# Authentication settings
+jwt_secret_key:
+  type: str
+  help: Secret key for JWT token generation (will be randomly generated)
+  default: ""
+  when: false
+
+# Admin user defaults
+admin_email:
+  type: str
+  help: Default admin user email
+  default: admin@example.com
+
+admin_password:
+  type: str
+  help: Default admin user password (change in production!)
+  default: "admin123"
+
+# Server settings
+host:
+  type: str
+  help: Server host
+  default: "0.0.0.0"
+
+port:
+  type: int
+  help: Server port
+  default: 8000
+
+# Optional features
+include_admin_interface:
+  type: bool
+  help: Include admin interface
+  default: true
+
+include_example_routes:
+  type: bool
+  help: Include example routes (todo list, etc.)
+  default: true
+
+# Development settings
+environment:
+  type: str
+  help: Development or production mode
+  choices:
+  - development
+  - production
+  default: development
+
+# Git configuration
+_git_init: true
+
+# Tasks to run after project creation
+_tasks:
+- python tasks.py
+
+# Files/folders to exclude based on conditions
+_exclude:
+- "{% if not include_admin_interface %}app/templates/admin/**{% endif %}"
+- "{% if not include_admin_interface %}app/admin_routes.py{% endif %}"
+- "{% if not include_admin_interface %}tests/test_admin.py{% endif %}"
+- "{% if not include_example_routes %}app/todo_routes.py{% endif %}"
+- "{% if not include_example_routes %}app/templates/todo/**{% endif %}"
+- "pyproject.toml.jinja" # Will be rendered by Copier's template engine
+- "**/__pycache__"
+- "**/*.pyc"
+- ".pytest_cache"
+- ".coverage"
+- "htmlcov"
+- "data/*.db"
+- ".venv"
+- "venv"
+
+# Template configuration
+_subdirectory: template # Put template files in a subdirectory
+_answers_file: .copier-answers.yml # Store answers for later updates
+
+# Hooks
+_jinja_extensions:
+- jinja2.ext.loopcontrols
+- jinja2.ext.do
+
+# Pre/Post copy scripts
+_pre_copy: pre_copy.py
+_post_copy: tasks.py

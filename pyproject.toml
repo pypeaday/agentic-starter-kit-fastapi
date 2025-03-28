@@ -1,0 +1,53 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "fastapi-htmx-starter"
+version = "0.0.1"
+description = "A modern web application starter kit with FastAPI, HTMX, and SQLite"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=1.12.1",
+    "fastapi>=0.104.0",
+    "httpx>=0.25.0",
+    "jinja2>=3.1.2",
+    "passlib[bcrypt]>=1.7.4",
+    "pydantic[email]>=2.4.2",
+    "python-dotenv>=1.0.0",
+    "python-jose[cryptography]>=3.4.0",
+    "python-multipart>=0.0.20",
+    "sqlalchemy>=2.0.23",
+    "uvicorn>=0.24.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.5",
+    "pytest-cov>=6.0.0",
+    "pytest-asyncio>=0.21.1",
+    "ruff>=0.3.0"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
+]
+env = [
+    "ENVIRONMENT=testing",
+    "TESTING=true",
+]
+    
+[tool.ruff]
+line-length = 120
+[tool.ruff.lint.isort]
+force-single-line = true

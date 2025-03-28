@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.theme-preview {
+    background-color: var(--preview-bg);
+    border-color: var(--preview-bg2);
+    color: var(--preview-fg);
+    position: relative;
+    overflow: hidden;
+}
+
+.theme-preview::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(
+        to right,
+        var(--preview-accent) 0%,
+        var(--preview-accent_hover) 50%,
+        var(--preview-success) 100%
+    );
+}
+
+.theme-preview:has(input:checked) {
+    box-shadow: 0 0 0 2px var(--preview-accent);
+}
+
+.theme-preview .bg1-sample {
+    background-color: var(--preview-bg1);
+    border: 1px solid var(--preview-bg2);
+}
+
+.theme-preview .bg2-sample {
+    background-color: var(--preview-bg2);
+}
+
+.theme-preview .accent-sample {
+    background-color: var(--preview-accent);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.theme-preview .accent-hover-sample {
+    background-color: var(--preview-accent_hover);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.theme-preview .success-sample {
+    background-color: var(--preview-success);
+    color: var(--preview-bg);
+    font-weight: 500;
+}
+
+.theme-preview .error-sample {
+    background-color: var(--preview-error);
+    color: var(--preview-bg);
+    font-weight: 500;
+}
+</style>
+<div class="max-w-4xl mx-auto">
+    <div class="bg-theme-bg1 rounded-lg shadow-lg p-6 border border-theme-bg2">
+        <h1 class="text-2xl font-bold text-theme-accent mb-6">Settings</h1>
+        
+        <!-- Theme Selection -->
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold text-theme-fg mb-4">Theme</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for theme_name, theme_colors in theme_previews.items() %}
+                <div class="relative">
+                    <input type="radio" 
+                           name="theme" 
+                           id="theme-{{ theme_name }}" 
+                           value="{{ theme_name }}"
+                           class="peer absolute opacity-0"
+                           hx-post="/settings/theme"
+                           hx-vals='{"theme_name": "{{ theme_name }}"}'
+                           hx-swap="none"
+                           hx-trigger="change"
+                           hx-target="body"
+                           {% if theme_name == current_theme %}checked{% endif %}>
+                    <label for="theme-{{ theme_name }}" 
+                           class="theme-preview block p-4 rounded-lg cursor-pointer border-2 transition-all duration-200 hover:border-theme-accent"
+                           style="--preview-bg: {{ theme_colors.bg }};
+                                  --preview-bg1: {{ theme_colors.bg1 }};
+                                  --preview-bg2: {{ theme_colors.bg2 }};
+                                  --preview-fg: {{ theme_colors.fg }};
+                                  --preview-accent: {{ theme_colors.accent }};
+                                  --preview-accent_hover: {{ theme_colors.accent_hover }};
+                                  --preview-success: {{ theme_colors.success }};
+                                  --preview-error: {{ theme_colors.error }};">
+                        <div class="font-bold mb-4 text-lg flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-theme-accent"></span>
+                            {{ theme_name|replace('-', ' ')|title }}
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <!-- Background Colors -->
+                            <div class="space-y-2">
+                                <div class="h-8 rounded bg1-sample"></div>
+                                <div class="h-8 rounded bg2-sample"></div>
+                                <div class="text-xs opacity-75">Background & Borders</div>
+                            </div>
+                            <!-- Accent Colors -->
+                            <div class="space-y-2">
+                                <div class="h-8 rounded accent-sample"></div>
+                                <div class="h-8 rounded accent-hover-sample"></div>
+                                <div class="text-xs opacity-75">Accent & Hover</div>
+                            </div>
+                        </div>
+                        <!-- Text Colors -->
+                        <div class="mt-4 space-y-2 text-sm">
+                            <div>Primary Text</div>
+                            <div class="opacity-75">Secondary Text</div>
+                            <div class="flex gap-2">
+                                <div class="px-2 py-1 rounded text-xs success-sample">Success</div>
+                                <div class="px-2 py-1 rounded text-xs error-sample">Error</div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

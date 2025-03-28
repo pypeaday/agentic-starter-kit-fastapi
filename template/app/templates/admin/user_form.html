@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Create' if is_new else 'Edit' }} User{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto p-4">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-theme-accent">{{ 'Create' if is_new else 'Edit' }} User</h1>
+        <a href="/admin/users" class="px-4 py-2 bg-theme-bg2 text-theme-fg rounded-md hover:bg-theme-bg transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>Back to Users
+        </a>
+    </div>
+
+    <div class="bg-theme-bg1 border border-theme-bg2 rounded-lg p-6 shadow-md">
+        <form hx-{{ 'post' if is_new else 'put' }}="/admin/users{{ '' if is_new else '/' + user.id|string }}"
+              hx-redirect="/admin/users"
+              class="space-y-4">
+            <div>
+                <label for="email" class="block text-theme-fg font-medium mb-1">Email</label>
+                <input type="email" 
+                       id="email" 
+                       name="email" 
+                       value="{{ user.email if user else '' }}"
+                       class="w-full px-4 py-2 rounded-md border border-theme-bg2 bg-theme-bg focus:outline-none focus:ring-2 focus:ring-theme-accent"
+                       required>
+            </div>
+
+            <div>
+                <label for="name" class="block text-theme-fg font-medium mb-1">Name</label>
+                <input type="text" 
+                       id="name" 
+                       name="name" 
+                       value="{{ user.name if user else '' }}"
+                       class="w-full px-4 py-2 rounded-md border border-theme-bg2 bg-theme-bg focus:outline-none focus:ring-2 focus:ring-theme-accent">
+            </div>
+
+            {% if is_new %}
+            <div>
+                <label for="password" class="block text-theme-fg font-medium mb-1">Password</label>
+                <input type="password" 
+                       id="password" 
+                       name="password" 
+                       class="w-full px-4 py-2 rounded-md border border-theme-bg2 bg-theme-bg focus:outline-none focus:ring-2 focus:ring-theme-accent"
+                       required>
+            </div>
+            {% endif %}
+
+            <div>
+                <label for="role" class="block text-theme-fg font-medium mb-1">Role</label>
+                <select id="role" 
+                        name="role" 
+                        class="w-full px-4 py-2 rounded-md border border-theme-bg2 bg-theme-bg focus:outline-none focus:ring-2 focus:ring-theme-accent">
+                    {% for role in roles %}
+                    <option value="{{ role.name }}" 
+                            {% if user and user.role == role.name %}selected{% endif %}>
+                        {{ role.name }} - {{ role.description }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="flex items-center">
+                <input type="checkbox" 
+                       id="is_active" 
+                       name="is_active" 
+                       {% if not user or user.is_active %}checked{% endif %}
+                       class="mr-2">
+                <label for="is_active" class="text-theme-fg">Active Account</label>
+            </div>
+
+            <div class="flex justify-end pt-4">
+                <button type="submit" 
+                        class="px-6 py-2 bg-theme-accent text-white rounded-md hover:opacity-90 transition-opacity">
+                    {{ 'Create' if is_new else 'Update' }} User
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

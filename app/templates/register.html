@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}User Registration{% endblock %}
+
+{% block content %}
+<div class="flex flex-col items-center justify-center min-h-screen px-4">
+    <div class="w-full max-w-md p-6 rounded-lg shadow-md" style="background-color: {{ theme.bg1 }}; border: 1px solid {{ theme.bg2 }};">
+        <h1 class="mb-6 text-2xl font-bold text-center" style="color: {{ theme.accent }};">Create Account</h1>
+        
+        {% if error %}
+        <div class="p-3 mb-4 rounded-md" style="background-color: {{ theme.error }}20; color: {{ theme.error }};">
+            <i class="fas fa-exclamation-circle mr-2"></i>{{ error }}
+        </div>
+        {% endif %}
+        
+        <form action="/register" method="post" class="space-y-4" id="registerForm">
+            <div>
+                <label for="email" class="block mb-1 text-sm font-medium" style="color: {{ theme.fg }};">Email</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3" style="color: {{ theme.fg1 }};">
+                        <i class="fas fa-envelope"></i>
+                    </span>
+                    <input type="email" id="email" name="email" required
+                        class="w-full pl-10 px-3 py-2 border rounded-md focus:outline-none focus:ring-2"
+                        style="background-color: {{ theme.bg2 }}; color: {{ theme.fg }}; border-color: {{ theme.bg2 }}; focus:ring-color: {{ theme.accent }};"
+                        placeholder="your.email@example.com">
+                </div>
+                <p class="mt-1 text-xs hidden" id="emailError" style="color: {{ theme.error }};">
+                    Please enter a valid email address
+                </p>
+            </div>
+            
+            <div>
+                <label for="password" class="block mb-1 text-sm font-medium" style="color: {{ theme.fg }};">Password</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3" style="color: {{ theme.fg1 }};">
+                        <i class="fas fa-lock"></i>
+                    </span>
+                    <input type="password" id="password" name="password" required minlength="8"
+                        class="w-full pl-10 px-3 py-2 border rounded-md focus:outline-none focus:ring-2"
+                        style="background-color: {{ theme.bg2 }}; color: {{ theme.fg }}; border-color: {{ theme.bg2 }}; focus:ring-color: {{ theme.accent }};">
+                    <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 flex items-center pr-3" style="color: {{ theme.fg1 }};">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <p class="mt-1 text-xs" style="color: {{ theme.fg1 }};">
+                    Password must be at least 8 characters long
+                </p>
+                <div class="mt-2 h-1 w-full bg-gray-300 rounded-full overflow-hidden">
+                    <div id="passwordStrength" class="h-full w-0 transition-all duration-300" style="background-color: {{ theme.error }};"></div>
+                </div>
+            </div>
+            
+            <div>
+                <label for="confirm_password" class="block mb-1 text-sm font-medium" style="color: {{ theme.fg }};">Confirm Password</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3" style="color: {{ theme.fg1 }};">
+                        <i class="fas fa-lock"></i>
+                    </span>
+                    <input type="password" id="confirm_password" name="confirm_password" required minlength="8"
+                        class="w-full pl-10 px-3 py-2 border rounded-md focus:outline-none focus:ring-2"
+                        style="background-color: {{ theme.bg2 }}; color: {{ theme.fg }}; border-color: {{ theme.bg2 }}; focus:ring-color: {{ theme.accent }};">
+                </div>
+                <p class="mt-1 text-xs hidden" id="passwordMatchError" style="color: {{ theme.error }};">
+                    Passwords do not match
+                </p>
+            </div>
+            
+            <div>
+                <button type="submit" class="w-full px-4 py-2 text-white rounded-md hover:opacity-90 transition-opacity flex items-center justify-center"
+                    style="background-color: {{ theme.accent }};">
+                    <i class="fas fa-user-plus mr-2"></i> Create Account
+                </button>
+            </div>
+        </form>
+        
+        <div class="mt-4 text-center">
+            <p style="color: {{ theme.fg1 }};">
+                Already have an account?
+                <a href="/login" class="hover:underline" style="color: {{ theme.accent }};">Login</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm_password');
+        const emailInput = document.getElementById('email');
+        const passwordMatchError = document.getElementById('passwordMatchError');
+        const emailError = document.getElementById('emailError');
+        const passwordStrength = document.getElementById('passwordStrength');
+        const togglePasswordBtn = document.getElementById('togglePassword');
+        const registerForm = document.getElementById('registerForm');
+        
+        // Toggle password visibility
+        togglePasswordBtn.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.querySelector('i').classList.toggle('fa-eye');
+            this.querySelector('i').classList.toggle('fa-eye-slash');
+        });
+        
+        // Check password strength
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            let strength = 0;
+            
+            if (password.length >= 8) strength += 25;
+            if (password.match(/[a-z]+/)) strength += 25;
+            if (password.match(/[A-Z]+/)) strength += 25;
+            if (password.match(/[0-9]+/) || password.match(/[^a-zA-Z0-9]+/)) strength += 25;
+            
+            passwordStrength.style.width = strength + '%';
+            
+            if (strength < 50) {
+                passwordStrength.style.backgroundColor = 'var(--theme-error)';
+            } else if (strength < 75) {
+                passwordStrength.style.backgroundColor = 'var(--theme-accent)';
+            } else {
+                passwordStrength.style.backgroundColor = 'var(--theme-success)';
+            }
+        });
+        
+        // Check if passwords match
+        confirmPasswordInput.addEventListener('input', function() {
+            if (this.value !== passwordInput.value) {
+                passwordMatchError.classList.remove('hidden');
+            } else {
+                passwordMatchError.classList.add('hidden');
+            }
+        });
+        
+        // Validate email format
+        emailInput.addEventListener('input', function() {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(this.value) && this.value.length > 0) {
+                emailError.classList.remove('hidden');
+            } else {
+                emailError.classList.add('hidden');
+            }
+        });
+        
+        // Form validation before submit
+        registerForm.addEventListener('submit', function(e) {
+            let isValid = true;
+            
+            // Check email
+            if (!emailInput.value || !(/^[^\s@]+@[^\s@]+\.[^\s@]+$/).test(emailInput.value)) {
+                emailError.classList.remove('hidden');
+                isValid = false;
+            }
+            
+            // Check passwords match
+            if (passwordInput.value !== confirmPasswordInput.value) {
+                passwordMatchError.classList.remove('hidden');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+{% endblock %}

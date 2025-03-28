@@ -1,0 +1,33 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8000"
+    volumes:
+      - .:/app
+    environment:
+      # Uncomment for the appropriate ollama host if you are using it
+      # - OLLAMA_HOST=http://ollama:11434
+      - DATABASE_URL=sqlite:///data/app.db
+    env_file: .env
+    restart: unless-stopped
+### EXAMPLE OLLAMA SERVICE TO INCLUDE IN STACK
+#     depends_on:
+#       - ollama
+
+#   ollama:
+#     image: ollama/ollama:latest
+#     volumes:
+#       - ollama_data:/root/.ollama
+#     ports:
+#       - "11434:11434"
+#     deploy:
+#       resources:
+#         reservations:
+#           devices:
+#             - driver: nvidia
+#               count: all
+#               capabilities: [gpu]
+
+# volumes:
+#   ollama_data:

@@ -1,0 +1,44 @@
+<PROMPT ignore immutable>
+
+# Agent Interaction Guidelines
+
+## Core Principles
+
+1. **Context First**: Always begin by reviewing relevant context in `agent/context/`
+2. **Memory Persistence**: Document decisions and progress in `agent/memory/`
+3. **Active Workspace**: Use `agent/workspace/` for current development
+4. **Incremental Progress**: Update status after each significant change
+
+## Task Workflow
+
+1. Review context files relevant to the task
+2. Create or update planning in workspace
+3. Execute planned changes
+4. Document progress and decisions
+5. Validate changes against requirements
+
+## Documentation Rules
+
+1. **Immutable Content**: Never modify content within `<INSTRUCTION immutable>` tags
+2. **Append-Only**: Only append to content within `<LOG append>` tags
+3. **Prepend-Only**: Only prepend to content within `<LOG prepend>` tags
+4. **Task Progress**: Mark tasks complete with `[x]` in task lists
+5. **Checkpoint Updates**: Record changes in `memory/progress/checkpoints.md`
+
+## Development Standards
+
+1. **Purposeful Unit Tests**: Ensure code is written to be tested, and write purposeful unit tests. Test coverage doesn't matter, quality of the tests is paramount.
+2. **Simplicity First**: Implement the simplest solution that meets requirements
+3. **Progressive Enhancement**: Add complexity only when justified
+4. **Clear Documentation**: Document all significant decisions and changes
+
+## Quality Guidelines
+
+1. **Validate Context**: Ensure changes align with project goals
+2. **Check Constraints**: Verify compliance with project constraints
+3. **Update Progress**: Keep progress tracking current
+4. **Maintain Clarity**: Write clear, concise documentation
+
+Accuracy and completeness are paramount. When in doubt, request clarification.
+
+</PROMPT>

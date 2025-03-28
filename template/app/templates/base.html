@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="{{ current_theme }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foo App</title>
+    <script src="https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.11/dist/_hyperscript.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/theme.css" rel="stylesheet">
+    <script>
+        // Theme management
+        const applyThemeColors = async (themeName) => {
+            try {
+                const response = await fetch(`/api/theme/${themeName}`);
+                if (!response.ok) throw new Error('Failed to fetch theme');
+                const colors = await response.json();
+                
+                const root = document.documentElement;
+                Object.entries(colors).forEach(([key, value]) => {
+                    root.style.setProperty(`--theme-${key}`, value);
+                });
+                
+                // Update data-theme attribute
+                root.dataset.theme = themeName;
+                
+                console.log(`Theme applied: ${themeName}`);
+            } catch (error) {
+                console.error('Error applying theme:', error);
+            }
+        };
+
+        // Handle theme changes from settings page
+        htmx.on('htmx:afterRequest', (evt) => {
+            if (evt.detail.pathInfo.requestPath === '/settings/theme') {
+                const themeName = evt.detail.requestConfig.parameters.theme_name;
+                applyThemeColors(themeName);
+            }
+        });
+
+        // Set theme from cookie on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const getCookie = (name) => {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+            };
+            const theme = getCookie('theme') || '{{ current_theme }}';
+            applyThemeColors(theme);
+        });
+
+        // Configure Tailwind theme
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        theme: {
+                            bg: 'var(--theme-bg)',
+                            bg1: 'var(--theme-bg1)',
+                            bg2: 'var(--theme-bg2)',
+                            fg: 'var(--theme-fg)',
+                            fg1: 'var(--theme-fg1)',
+                            accent: 'var(--theme-accent)',
+                            accent_hover: 'var(--theme-accent_hover)',
+                            success: 'var(--theme-success)',
+                            error: 'var(--theme-error)'
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        [x-cloak] { display: none !important; }
+        :root {
+            --transition-speed: 200ms;
+        }
+
+        *, *::before, *::after {
+            transition: background-color var(--transition-speed) ease,
+                       border-color var(--transition-speed) ease,
+                       color var(--transition-speed) ease,
+                       box-shadow var(--transition-speed) ease;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--theme-bg);
+            color: var(--theme-fg);
+        }
+        .toast {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background-color: var(--theme-success);
+            color: var(--theme-bg);
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            border: 1px solid var(--theme-bg2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .toast.show {
+            opacity: 1;
+        }
+        input, select, textarea {
+            background-color: var(--theme-bg1);
+            border-color: var(--theme-bg2);
+            color: var(--theme-fg);
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(0.8) brightness(100%) sepia(100%) saturate(70%) hue-rotate(180deg);
+            cursor: pointer;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--theme-accent);
+            --tw-ring-color: var(--theme-accent);
+            --tw-ring-opacity: 1;
+        }
+        
+        /* Drag and drop styles */
+        [draggable="true"] {
+            cursor: grab;
+        }
+        [draggable="true"]:active {
+            cursor: grabbing;
+        }
+        .dragging {
+            opacity: 0.7;
+            transform: scale(0.95);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            border: 2px dashed var(--theme-accent) !important;
+        }
+        .being-dragged {
+            opacity: 0.7;
+            transform: scale(0.95);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            border: 2px dashed var(--theme-accent) !important;
+        }
+        .book-list.htmx-swapping {
+            opacity: 0.5;
+        }
+        .status-column.drag-over {
+            border-color: var(--theme-accent) !important;
+            box-shadow: 0 0 0 3px var(--theme-accent_hover);
+            transition: all 0.2s ease;
+        }
+        .book-list.drag-over {
+            background-color: var(--theme-bg2);
+            border-radius: 0.5rem;
+            padding: 8px;
+            transition: all 0.2s ease;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            input, select, textarea {
+                font-size: 16px; /* Prevent zoom on mobile */
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <nav class="bg-theme-bg1 shadow-lg border-b border-theme-bg2">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-xl font-bold text-theme-fg hover:text-theme-accent transition-colors">Foo App</a>
+                    <a href="/settings" class="text-theme-fg1 hover:text-theme-accent transition-colors">
+                        <i class="fas fa-cog"></i>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    {% if user %}
+                    <a href="/profile" class="text-theme-fg1 hover:text-theme-accent transition-colors mr-2">
+                        <i class="fas fa-user"></i> {{ user.email.split('@')[0] }}
+                    </a>
+                    {% if user.role == 'admin' %}
+                    <a href="/admin/dashboard" class="text-theme-fg1 hover:text-theme-accent transition-colors mr-2">
+                        <i class="fas fa-shield-alt"></i> Admin
+                    </a>
+                    {% endif %}
+                    <a href="/logout" class="text-theme-fg1 hover:text-theme-error transition-colors mr-4">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                    {% else %}
+                    <a href="/login" class="text-theme-fg1 hover:text-theme-accent transition-colors mr-4">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <div id="main-content" class="pb-16">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <div id="toast" class="toast" _="on htmx:afterRequest if event.detail.successful wait 0.1s add .show wait 3s remove .show"></div>
+
+    <script>
+        htmx.on("showMessage", (e) => {
+            const toast = document.getElementById("toast");
+            toast.textContent = e.detail.value;
+            toast.classList.add("show");
+            setTimeout(() => toast.classList.remove("show"), 3000);
+        });
+    </script>
+</body>
+</html>

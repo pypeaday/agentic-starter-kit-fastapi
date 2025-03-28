@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto p-4">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-theme-accent">Manage Users</h1>
+        <div class="flex gap-4">
+            <a href="/admin/users/new" class="px-4 py-2 bg-theme-accent text-white rounded-md hover:opacity-90 transition-opacity">
+                <i class="fas fa-plus mr-2"></i>Create User
+            </a>
+            <a href="/admin/dashboard" class="px-4 py-2 bg-theme-bg2 text-theme-fg rounded-md hover:bg-theme-bg transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+    
+    <div class="bg-theme-bg1 border border-theme-bg2 rounded-lg p-4 shadow-md mb-8">
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-theme-bg2 rounded-lg overflow-hidden">
+                <thead class="bg-theme-bg">
+                    <tr>
+                        <th class="py-2 px-4 text-left text-theme-fg1">ID</th>
+                        <th class="py-2 px-4 text-left text-theme-fg1">Email</th>
+                        <th class="py-2 px-4 text-left text-theme-fg1">Name</th>
+                        <th class="py-2 px-4 text-left text-theme-fg1">Role</th>
+                        <th class="py-2 px-4 text-left text-theme-fg1">Status</th>
+                        <th class="py-2 px-4 text-left text-theme-fg1">Last Login</th>
+                        <th class="py-2 px-4 text-left text-theme-fg1">Created</th>
+                        <th class="py-2 px-4 text-left text-theme-fg1">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr class="border-t border-theme-bg">
+                        <td class="py-2 px-4">{{ user.id }}</td>
+                        <td class="py-2 px-4">{{ user.email }}</td>
+                        <td class="py-2 px-4">{{ user.name or '-' }}</td>
+                        <td class="py-2 px-4">
+                            <span class="px-2 py-1 rounded text-xs font-medium
+                                {% if user.role == 'admin' %}bg-theme-error text-white
+                                {% else %}bg-theme-accent text-white{% endif %}">
+                                {{ user.role }}
+                            </span>
+                        </td>
+                        <td class="py-2 px-4">
+                            <span class="px-2 py-1 rounded text-xs font-medium
+                                {% if user.is_active %}bg-theme-success text-white
+                                {% else %}bg-theme-error text-white{% endif %}">
+                                {{ 'Active' if user.is_active else 'Inactive' }}
+                            </span>
+                        </td>
+                        <td class="py-2 px-4">{{ user.last_login.strftime('%Y-%m-%d %H:%M') if user.last_login else 'Never' }}</td>
+                        <td class="py-2 px-4">{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+                        <td class="py-2 px-4">
+                            {% if user.id != current_user.id %}
+                            <div class="flex space-x-2">
+                                <button
+                                    class="px-3 py-1 text-sm rounded bg-theme-accent text-white hover:opacity-90 transition"
+                                    hx-get="/admin/users/{{ user.id }}/edit"
+                                    hx-target="#edit-modal"
+                                    hx-trigger="click"
+                                >
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button
+                                    class="px-3 py-1 text-sm rounded bg-theme-accent text-white hover:opacity-90 transition"
+                                    hx-post="/admin/users/{{ user.id }}/toggle-role"
+                                    hx-swap="none"
+                                    hx-trigger="click"
+                                    hx-indicator="#indicator-{{ user.id }}"
+                                    onclick="setTimeout(() => { window.location.reload(); }, 300);"
+                                >
+                                    <i class="fas fa-user-shield" title="Toggle Role"></i>
+                                </button>
+                                <button
+                                    class="px-3 py-1 text-sm rounded {% if user.is_active %}bg-theme-error{% else %}bg-theme-success{% endif %} text-white hover:opacity-90 transition"
+                                    hx-post="/admin/users/{{ user.id }}/toggle-active"
+                                    hx-swap="none"
+                                    hx-trigger="click"
+                                    hx-indicator="#indicator-{{ user.id }}"
+                                    onclick="setTimeout(() => { window.location.reload(); }, 300);"
+                                >
+                                    <i class="fas {% if user.is_active %}fa-user-slash{% else %}fa-user-check{% endif %}"
+                                       title="{{ 'Deactivate' if user.is_active else 'Activate' }}"></i>
+                                </button>
+                                <button
+                                    class="px-3 py-1 text-sm rounded bg-theme-accent text-white hover:opacity-90 transition"
+                                    hx-post="/admin/users/{{ user.id }}/reset-password"
+                                    hx-swap="none"
+                                    hx-trigger="click"
+                                    hx-confirm="Are you sure you want to reset this user's password?"
+                                >
+                                    <i class="fas fa-key" title="Reset Password"></i>
+                                </button>
+                                <div id="indicator-{{ user.id }}" class="htmx-indicator">
+                                    <div class="animate-spin rounded-full h-4 w-4 border-2 border-theme-accent border-t-transparent"></div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <span class="text-theme-fg1 italic">Current User</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Roles{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto p-4">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-theme-accent">Manage Roles</h1>
+        <div class="flex gap-4">
+            <button onclick="showCreateRoleModal()"
+                    class="px-4 py-2 bg-theme-accent text-white rounded-md hover:opacity-90 transition-opacity">
+                <i class="fas fa-plus mr-2"></i>Create Role
+            </button>
+            <a href="/admin/dashboard" class="px-4 py-2 bg-theme-bg2 text-theme-fg rounded-md hover:bg-theme-bg transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="bg-theme-bg1 border border-theme-bg2 rounded-lg p-4 shadow-md">
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-theme-bg2 rounded-lg overflow-hidden">
+                <thead class="bg-theme-bg">
+                    <tr>
+                        <th class="py-2 px-4 text-left text-theme-fg1">Name</th>
+                        <th class="py-2 px-4 text-left text-theme-fg1">Description</th>
+                        <th class="py-2 px-4 text-left text-theme-fg1">Permissions</th>
+                        <th class="py-2 px-4 text-left text-theme-fg1">Users</th>
+                        <th class="py-2 px-4 text-left text-theme-fg1">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for role in roles %}
+                    <tr class="border-t border-theme-bg">
+                        <td class="py-2 px-4">{{ role.name }}</td>
+                        <td class="py-2 px-4">{{ role.description or '-' }}</td>
+                        <td class="py-2 px-4">
+                            {% set permissions = role.permissions|fromjson %}
+                            <div class="flex flex-wrap gap-1">
+                                {% for perm, enabled in permissions.items() %}
+                                {% if enabled %}
+                                <span class="px-2 py-1 text-xs rounded bg-theme-accent text-white">
+                                    {{ perm }}
+                                </span>
+                                {% endif %}
+                                {% endfor %}
+                                {% if not permissions %}
+                                <span class="text-theme-fg1 italic">No permissions defined</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="py-2 px-4">
+                            {{ role.users|length }} users
+                        </td>
+                        <td class="py-2 px-4">
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 text-sm rounded bg-theme-accent text-white hover:opacity-90 transition edit-role-btn"
+                                        data-id="{{ role.id }}"
+                                        data-name="{{ role.name }}"
+                                        data-description="{{ role.description or '' }}"
+                                        data-permissions="{{ role.permissions|tojson|safe }}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                {% if not role.users %}
+                                <button onclick="deleteRole('{{ role.id }}')"
+                                        class="px-3 py-1 text-sm rounded bg-theme-error text-white hover:opacity-90 transition">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Role Modal -->
+<div id="roleModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-theme-bg1 rounded-lg p-6 max-w-2xl w-full mx-4">
+        <h2 id="modalTitle" class="text-xl font-bold text-theme-accent mb-4"></h2>
+        <form id="roleForm" class="space-y-4">
+            <div>
+                <label for="name" class="block text-theme-fg font-medium mb-1">Role Name</label>
+                <input type="text" 
+                       id="name" 
+                       name="name" 
+                       class="w-full px-4 py-2 rounded-md border border-theme-bg2 bg-theme-bg focus:outline-none focus:ring-2 focus:ring-theme-accent"
+                       required>
+            </div>
+
+            <div>
+                <label for="description" class="block text-theme-fg font-medium mb-1">Description</label>
+                <textarea id="description" 
+                          name="description" 
+                          class="w-full px-4 py-2 rounded-md border border-theme-bg2 bg-theme-bg focus:outline-none focus:ring-2 focus:ring-theme-accent"
+                          rows="3"></textarea>
+            </div>
+
+            <div>
+                <label class="block text-theme-fg font-medium mb-1">Permissions</label>
+                <div id="permissionsList" class="space-y-2">
+                    <div class="flex items-center">
+                        <input type="checkbox" 
+                               name="permissions" 
+                               value="view_users"
+                               class="mr-2">
+                        <span class="text-theme-fg">View Users</span>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" 
+                               name="permissions" 
+                               value="manage_users"
+                               class="mr-2">
+                        <span class="text-theme-fg">Manage Users</span>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" 
+                               name="permissions" 
+                               value="view_roles"
+                               class="mr-2">
+                        <span class="text-theme-fg">View Roles</span>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" 
+                               name="permissions" 
+                               value="manage_roles"
+                               class="mr-2">
+                        <span class="text-theme-fg">Manage Roles</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-4 pt-4">
+                <button type="button"
+                        onclick="closeRoleModal()"
+                        class="px-4 py-2 bg-theme-bg2 text-theme-fg rounded-md hover:bg-theme-bg transition-colors">
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 bg-theme-accent text-white rounded-md hover:opacity-90 transition-opacity">
+                    Save Role
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+let currentRoleId = null;
+
+function showCreateRoleModal() {
+    currentRoleId = null;
+    document.getElementById('modalTitle').textContent = 'Create Role';
+    document.getElementById('roleForm').reset();
+    document.getElementById('roleModal').classList.remove('hidden');
+}
+
+// Add event listeners for edit buttons
+document.querySelectorAll('.edit-role-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        const id = button.dataset.id;
+        const name = button.dataset.name;
+        const description = button.dataset.description;
+        const permissions = JSON.parse(button.dataset.permissions);
+
+        currentRoleId = id;
+        document.getElementById('modalTitle').textContent = 'Edit Role';
+        document.getElementById('name').value = name;
+        document.getElementById('description').value = description;
+        
+        // Reset and set permissions
+        document.querySelectorAll('input[name="permissions"]').forEach(checkbox => {
+            checkbox.checked = permissions[checkbox.value] === true;
+        });
+        
+        document.getElementById('roleModal').classList.remove('hidden');
+    });
+});
+
+function closeRoleModal() {
+    document.getElementById('roleModal').classList.add('hidden');
+}
+
+document.getElementById('roleForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const permissions = {};
+    document.querySelectorAll('input[name="permissions"]').forEach(checkbox => {
+        permissions[checkbox.value] = checkbox.checked;
+    });
+    formData.set('permissions', JSON.stringify(permissions));
+    
+    const method = currentRoleId ? 'PUT' : 'POST';
+    const url = currentRoleId ? `/admin/roles/${currentRoleId}` : '/admin/roles';
+    
+    try {
+        const response = await fetch(url, {
+            method: method,
+            body: formData
+        });
+        
+        if (response.ok) {
+            window.location.reload();
+        } else {
+            const error = await response.json();
+            alert(error.detail);
+        }
+    } catch (error) {
+        alert('An error occurred while saving the role');
+    }
+});
+
+async function deleteRole(id) {
+    if (!confirm('Are you sure you want to delete this role?')) return;
+    
+    try {
+        const response = await fetch(`/admin/roles/${id}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            window.location.reload();
+        } else {
+            const error = await response.json();
+            alert(error.detail);
+        }
+    } catch (error) {
+        alert('An error occurred while deleting the role');
+    }
+}
+</script>
+{% endblock %}

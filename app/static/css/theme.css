@@ -1,0 +1,169 @@
+/* Base transitions for all themes */
+:root {
+  --transition-speed: 200ms;
+  --theme-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --theme-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --theme-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* Apply transitions to themed elements */
+*, *::before, *::after {
+  transition: background-color var(--transition-speed) ease,
+              border-color var(--transition-speed) ease,
+              color var(--transition-speed) ease,
+              box-shadow var(--transition-speed) ease,
+              transform var(--transition-speed) ease;
+}
+
+/* Default theme (Gruvbox Dark) */
+:root, [data-theme="gruvbox-dark"] {
+  --theme-bg: #282828;    /* Background */
+  --theme-bg1: #3c3836;   /* Secondary Background */
+  --theme-bg2: #504945;   /* Tertiary Background */
+  --theme-fg: #ebdbb2;    /* Text */
+  --theme-fg1: #d5c4a1;   /* Secondary Text */
+  --theme-accent: #83a598; /* Blue for links/buttons */
+  --theme-accent_hover: #8ec07c; /* Aqua for hover states */
+  --theme-success: #b8bb26; /* Green */
+  --theme-error: #fb4934;   /* Red */
+  --theme-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+  --theme-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  --theme-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+/* Light theme */
+[data-theme="light"] {
+  --theme-bg: #ffffff;
+  --theme-bg1: #f3f4f6;
+  --theme-bg2: #e5e7eb;
+  --theme-fg: #111827;
+  --theme-fg1: #4b5563;
+  --theme-accent: #3b82f6;
+  --theme-accent_hover: #2563eb;
+  --theme-success: #10b981;
+  --theme-error: #ef4444;
+  --theme-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  --theme-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --theme-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Nord theme */
+[data-theme="nord"] {
+  --theme-bg: #2e3440;    /* Polar Night */
+  --theme-bg1: #3b4252;
+  --theme-bg2: #434c5e;
+  --theme-fg: #eceff4;    /* Snow Storm */
+  --theme-fg1: #d8dee9;
+  --theme-accent: #88c0d0; /* Frost */
+  --theme-accent_hover: #81a1c1;
+  --theme-success: #a3be8c; /* Aurora */
+  --theme-error: #bf616a;
+  --theme-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
+  --theme-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.25);
+  --theme-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.25);
+}
+
+/* Dracula theme */
+[data-theme="dracula"] {
+  --theme-bg: #282a36;    /* Background */
+  --theme-bg1: #44475a;   /* Current Line */
+  --theme-bg2: #6272a4;   /* Selection */
+  --theme-fg: #f8f8f2;    /* Foreground */
+  --theme-fg1: #bfbfbf;
+  --theme-accent: #bd93f9; /* Purple */
+  --theme-accent_hover: #ff79c6; /* Pink */
+  --theme-success: #50fa7b; /* Green */
+  --theme-error: #ff5555;   /* Red */
+  --theme-shadow: 0 1px 3px 0 rgba(189, 147, 249, 0.15);
+  --theme-shadow-md: 0 4px 6px -1px rgba(189, 147, 249, 0.15);
+  --theme-shadow-lg: 0 10px 15px -3px rgba(189, 147, 249, 0.15);
+}
+
+/* Solarized Dark theme */
+[data-theme="solarized-dark"] {
+  --theme-bg: #002b36;    /* Base03 */
+  --theme-bg1: #073642;   /* Base02 */
+  --theme-bg2: #586e75;   /* Base01 */
+  --theme-fg: #fdf6e3;    /* Base3 */
+  --theme-fg1: #eee8d5;   /* Base2 */
+  --theme-accent: #268bd2; /* Blue */
+  --theme-accent_hover: #2aa198; /* Cyan */
+  --theme-success: #859900; /* Green */
+  --theme-error: #dc322f;   /* Red */
+  --theme-shadow: 0 1px 3px 0 rgba(0, 43, 54, 0.3);
+  --theme-shadow-md: 0 4px 6px -1px rgba(0, 43, 54, 0.3);
+  --theme-shadow-lg: 0 10px 15px -3px rgba(0, 43, 54, 0.3);
+}
+
+/* Solarized Light theme */
+[data-theme="solarized-light"] {
+  --theme-bg: #fdf6e3;    /* Base3 */
+  --theme-bg1: #eee8d5;   /* Base2 */
+  --theme-bg2: #93a1a1;   /* Base1 */
+  --theme-fg: #002b36;    /* Base03 */
+  --theme-fg1: #073642;   /* Base02 */
+  --theme-accent: #268bd2; /* Blue */
+  --theme-accent_hover: #2aa198; /* Cyan */
+  --theme-success: #859900; /* Green */
+  --theme-error: #dc322f;   /* Red */
+  --theme-shadow: 0 1px 3px 0 rgba(0, 43, 54, 0.1);
+  --theme-shadow-md: 0 4px 6px -1px rgba(0, 43, 54, 0.1);
+  --theme-shadow-lg: 0 10px 15px -3px rgba(0, 43, 54, 0.1);
+}
+
+/* Theme-specific adjustments */
+[data-theme="dracula"] .toast {
+  background-color: var(--theme-success);
+  color: var(--theme-bg);
+  opacity: 0.95;
+}
+
+[data-theme="nord"] .toast {
+  background-color: var(--theme-success);
+  color: var(--theme-bg);
+  opacity: 0.95;
+}
+
+/* Improve form elements across themes */
+input, select, textarea {
+  background-color: var(--theme-bg1);
+  border: 1px solid var(--theme-bg2);
+  color: var(--theme-fg);
+  transition: all var(--transition-speed) ease;
+  box-shadow: var(--theme-shadow);
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--theme-accent);
+  box-shadow: 0 0 0 2px var(--theme-accent_hover);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+/* Card and container styles */
+.card, .container {
+  box-shadow: var(--theme-shadow-md);
+  transition: transform var(--transition-speed) ease,
+              box-shadow var(--transition-speed) ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--theme-shadow-lg);
+}
+
+/* Button styles */
+button, .button {
+  box-shadow: var(--theme-shadow);
+  transition: all var(--transition-speed) ease;
+}
+
+button:hover, .button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--theme-shadow-md);
+}
+
+button:active, .button:active {
+  transform: translateY(0);
+  box-shadow: var(--theme-shadow);
+}
