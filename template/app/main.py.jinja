@@ -56,6 +56,56 @@ app.add_middleware(
 )
 
 
+# Add middleware to protect documentation routes
+@app.middleware("http")
+async def protect_docs_routes(request: Request, call_next):
+    # List of protected routes
+    protected_routes = ["/docs", "/redoc", "/openapi.json"]
+    
+    # Check if the request path is for a protected route
+    if request.url.path in protected_routes:
+        # Extract token from cookie
+        token = request.cookies.get("access_token")
+        
+        if not token:
+            # No token, return 403 Forbidden
+            from fastapi.responses import JSONResponse
+            return JSONResponse(
+                status_code=403,
+                content={"detail": "Not authorized. Admin role required."},
+            )
+        
+        # Verify token and check if user has admin role
+        try:
+            # Create a database session
+            db = database.SessionLocal()
+            try:
+                # Get user from token
+                user = auth.get_optional_current_user_sync(token, db)
+                
+                # Check if user exists and has admin role
+                if not user or user.role != "admin":
+                    # User doesn't have admin role, return 403 Forbidden
+                    from fastapi.responses import JSONResponse
+                    return JSONResponse(
+                        status_code=403,
+                        content={"detail": "Not authorized. Admin role required."},
+                    )
+            finally:
+                # Close the database session
+                db.close()
+        except Exception as e:
+            # Error verifying token, return 403 Forbidden
+            from fastapi.responses import JSONResponse
+            return JSONResponse(
+                status_code=403,
+                content={"detail": "Not authorized. Admin role required."},
+            )
+    
+    # Process the request and get the response
+    response = await call_next(request)
+    return response
+
 # Add middleware to extract token from cookies
 @app.middleware("http")
 async def cookie_to_authorization(request: Request, call_next):
