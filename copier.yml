@@ -19,7 +19,7 @@ project_name:
 repository_url:
   type: str
   help: URL of the template repository
-  default: "https://github.com/pypeaday/agentic-starter-kit-python"
+  default: "https://github.com/pypeaday/agentic-starter-kit-fastapi"
 
 project_slug:
   type: str
